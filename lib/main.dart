@@ -40,6 +40,7 @@ class _TimetablePageState extends State<TimetablePage> {
   bool loaded = false;
   bool _loadedEmpty = false;
   int selectedWeekday = DateTime.now().weekday;
+  int selectedWeek = currentTeachingWeek();
   Timer? _timer;
   String? _nextClassName;
   Duration? _nextClassCountdown;
@@ -65,6 +66,8 @@ class _TimetablePageState extends State<TimetablePage> {
     setState(() => _mergeCourses = prefs.getBool('merge_courses') ?? false);
     final savedDate = await LocalTimetableService.loadWeek1Monday();
     if (savedDate != null) week1Monday = savedDate;
+    // Refresh current week after loading week1Monday
+    setState(() => selectedWeek = currentTeachingWeek());
   }
 
   Future<void> _loadCached() async {
@@ -118,9 +121,10 @@ class _TimetablePageState extends State<TimetablePage> {
         loaded = true;
         _loadedEmpty = false;
         _statusMsg = '导入完成：${data.length} 周，${data.values.fold(0, (s, l) => s + l.length)} 条课程';
+        selectedWeek = currentTeachingWeek();
       });
       _updateCountdown();
-    _updateHomeWidget();
+      _updateHomeWidget();
 
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) setState(() => _statusMsg = null);
@@ -178,13 +182,23 @@ class _TimetablePageState extends State<TimetablePage> {
     return _getCoursesForDate(dateStr, week);
   }
 
+  /// Max week number that has data
+  int _maxWeek() {
+    int max = 1;
+    for (final key in timetable.keys) {
+      final n = int.tryParse(key) ?? 0;
+      if (n > max) max = n;
+    }
+    return max;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final week = currentTeachingWeek();
+    final currentWeek = currentTeachingWeek();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('第 $week 周'),
+        title: _buildWeekDropdown(currentWeek),
         actions: [
           IconButton(
             icon: const Icon(Icons.file_upload_outlined),
@@ -202,7 +216,46 @@ class _TimetablePageState extends State<TimetablePage> {
           ),
         ],
       ),
-      body: _buildBody(week),
+      body: _buildBody(selectedWeek),
+    );
+  }
+
+  Widget _buildWeekDropdown(int currentWeek) {
+    final maxWeek = _maxWeek();
+    return DropdownButton<int>(
+      value: selectedWeek,
+      underline: const SizedBox.shrink(),
+      icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+      dropdownColor: Theme.of(context).colorScheme.surface,
+      items: List.generate(maxWeek, (i) {
+        final w = i + 1;
+        final isCurrent = w == currentWeek;
+        return DropdownMenuItem(
+          value: w,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('第 $w 周', style: TextStyle(
+                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+              )),
+              if (isCurrent) ...[
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text('当前', style: TextStyle(fontSize: 10, color: Colors.white)),
+                ),
+              ],
+            ],
+          ),
+        );
+      }),
+      onChanged: (v) {
+        if (v != null) setState(() => selectedWeek = v);
+      },
     );
   }
 
@@ -243,7 +296,8 @@ class _TimetablePageState extends State<TimetablePage> {
     if (_gridMode) {
       return Column(
         children: [
-          if (_nextClassName != null && _nextClassCountdown != null) _buildCountdownCard(),
+          if (_nextClassName != null && _nextClassCountdown != null && week == currentTeachingWeek())
+            _buildCountdownCard(),
           if (_statusMsg != null) _buildStatusBar(),
           Expanded(child: _buildGridView(week)),
         ],
@@ -251,7 +305,8 @@ class _TimetablePageState extends State<TimetablePage> {
     }
     return Column(
       children: [
-        if (_nextClassName != null && _nextClassCountdown != null) _buildCountdownCard(),
+        if (_nextClassName != null && _nextClassCountdown != null && week == currentTeachingWeek())
+          _buildCountdownCard(),
         if (_statusMsg != null) _buildStatusBar(),
         _buildWeekdayTabs(),
         Expanded(child: _buildCourseList(week)),
@@ -525,7 +580,7 @@ class _TimetablePageState extends State<TimetablePage> {
           children: [
             const Icon(Icons.free_breakfast, size: 48, color: Colors.grey),
             const SizedBox(height: 12),
-            const Text('今天没课 ☺', style: TextStyle(fontSize: 16, color: Colors.grey)),
+            Text('这天没课 ☺', style: TextStyle(fontSize: 16, color: Colors.grey)),
           ],
         ),
       );
