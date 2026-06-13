@@ -2,7 +2,7 @@
     package="com.jikuai.gdust_lite">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="课表 Lite"
+        android:label="广科课表 Lite"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

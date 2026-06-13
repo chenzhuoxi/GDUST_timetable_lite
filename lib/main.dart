@@ -17,7 +17,7 @@ class GdustLiteApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '课表 Lite',
+      title: '广科课表 Lite',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorSchemeSeed: const Color(0xFF6B7FD7),

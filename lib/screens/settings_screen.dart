@@ -20,10 +20,12 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   DateTime? _week1Monday;
+  late bool _mergeCourses;
 
   @override
   void initState() {
     super.initState();
+    _mergeCourses = widget.mergeCourses;
     _loadWeek1();
   }
 
@@ -87,8 +89,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           SwitchListTile(
             title: const Text('合并连续课程'),
             subtitle: const Text('将同一课程的连续小节合并显示'),
-            value: widget.mergeCourses,
-            onChanged: widget.onMergeChanged,
+            value: _mergeCourses,
+            onChanged: (v) {
+              setState(() => _mergeCourses = v);
+              widget.onMergeChanged(v);
+            },
           ),
           const Divider(),
 
@@ -104,7 +109,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const _SectionHeader('关于'),
           const ListTile(
             leading: Icon(Icons.info_outline),
-            title: Text('课表 Lite'),
+            title: Text('广科课表 Lite'),
             subtitle: Text('版本 1.0.3\n导入 gdust-timetable 导出的 JSON 即可使用'),
           ),
         ],
