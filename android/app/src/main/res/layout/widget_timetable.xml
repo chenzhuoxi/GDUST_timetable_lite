@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_bg"
-    android:padding="12dp">
+    android:padding="14dp">
 
     <!-- 标题栏 -->
     <LinearLayout
@@ -22,7 +22,7 @@
             android:layout_weight="1"
             android:text="今日课表"
             android:textSize="14sp"
-            android:textColor="#FFFFFF"
+            android:textColor="#3A4A5C"
             android:textStyle="bold" />
 
         <TextView
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="第1周"
             android:textSize="11sp"
-            android:textColor="#B0FFFFFF" />
+            android:textColor="#8899AA" />
     </LinearLayout>
 
     <!-- 课程列表 -->
@@ -42,7 +42,7 @@
         android:layout_weight="1"
         android:text="没有课程 🎉"
         android:textSize="12sp"
-        android:textColor="#E0FFFFFF"
+        android:textColor="#4A5A6C"
         android:lineSpacingExtra="4dp" />
 
 </LinearLayout>

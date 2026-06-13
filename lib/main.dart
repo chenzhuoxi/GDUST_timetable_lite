@@ -47,10 +47,12 @@ class _TimetablePageState extends State<TimetablePage> {
   String? _statusMsg;
   bool _gridMode = false;
   bool _mergeCourses = false;
+  late PageController _weekdayPageController;
 
   @override
   void initState() {
     super.initState();
+    _weekdayPageController = PageController(initialPage: selectedWeekday - 1);
     _loadSettings().then((_) => _loadCached());
     _timer = Timer.periodic(const Duration(seconds: 1), (_) => _updateCountdown());
   }
@@ -58,6 +60,7 @@ class _TimetablePageState extends State<TimetablePage> {
   @override
   void dispose() {
     _timer?.cancel();
+    _weekdayPageController.dispose();
     super.dispose();
   }
 
@@ -271,21 +274,41 @@ class _TimetablePageState extends State<TimetablePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.upload_file_outlined, size: 64, color: Colors.grey),
-            const SizedBox(height: 16),
-            const Text('还没有课表数据', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            // 堆叠的书本+咖啡 emoji
+            Container(
+              width: 100, height: 100,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(_loadedEmpty ? '📚' : '😴', style: const TextStyle(fontSize: 48)),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              _loadedEmpty ? '还没有课表数据' : '今天可以休息啦',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
-            const Text(
-              '请先用 gdust-timetable 导出 JSON\n然后点击下方按钮选择文件导入',
+            Text(
+              _loadedEmpty
+                  ? '用 gdust-timetable 抓取课表后\n导出 JSON 文件，再导入到这里'
+                  : '这天没有课程安排，去做点喜欢的事吧',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 14, height: 1.5),
             ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              icon: const Icon(Icons.file_upload_outlined),
-              label: const Text('选择 JSON 文件'),
-              onPressed: _importFromFile,
-            ),
+            if (_loadedEmpty) ...[
+              const SizedBox(height: 28),
+              FilledButton.icon(
+                icon: const Icon(Icons.file_upload_outlined),
+                label: const Text('选择 JSON 文件'),
+                onPressed: _importFromFile,
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -309,7 +332,14 @@ class _TimetablePageState extends State<TimetablePage> {
           _buildCountdownCard(),
         if (_statusMsg != null) _buildStatusBar(),
         _buildWeekdayTabs(),
-        Expanded(child: _buildCourseList(week)),
+        Expanded(
+          child: PageView.builder(
+            controller: _weekdayPageController,
+            itemCount: 7,
+            onPageChanged: (i) => setState(() => selectedWeekday = i + 1),
+            itemBuilder: (ctx, i) => _buildCourseList(week),
+          ),
+        ),
       ],
     );
   }
@@ -549,6 +579,15 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
+  void _onWeekdayTabTap(int wd) {
+    setState(() => selectedWeekday = wd);
+    _weekdayPageController.animateToPage(
+      wd - 1,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+  }
+
   Widget _buildWeekdayTabs() {
     const labels = ['一', '二', '三', '四', '五', '六', '日'];
     return Padding(
@@ -562,7 +601,7 @@ class _TimetablePageState extends State<TimetablePage> {
               child: ChoiceChip(
                 label: Center(child: Text(labels[i])),
                 selected: wd == selectedWeekday,
-                onSelected: (_) => setState(() => selectedWeekday = wd),
+                onSelected: (_) => _onWeekdayTabTap(wd),
               ),
             ),
           );
@@ -593,6 +632,12 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
+  /// 课程名 → 确定性颜色
+  Color _courseColor(String name) {
+    final hue = (name.hashCode.abs() % 360).toDouble();
+    return HSLColor.fromAHSL(1.0, hue, 0.55, 0.50).toColor();
+  }
+
   Widget _courseCard(Map<String, dynamic> entry) {
     final course = entry['course'] as Course;
     final sectionLabel = entry['sectionLabel'] as String;
@@ -601,21 +646,32 @@ class _TimetablePageState extends State<TimetablePage> {
     final now = DateTime.now();
     final isToday = _weekdayFromDate(course.date) == now.weekday;
     final isPast = isToday && _isSectionPast(entry['startSection']);
+    final barColor = isPast ? Colors.grey : _courseColor(course.name);
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: isPast ? Colors.grey : Theme.of(context).colorScheme.primary,
-          child: Text(sectionLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+      clipBehavior: Clip.hardEdge,
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            Container(width: 5, color: barColor),
+            Expanded(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: barColor,
+                  child: Text(sectionLabel, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                ),
+                title: Text(course.name, style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  decoration: isPast ? TextDecoration.lineThrough : null,
+                  color: isPast ? Colors.grey : null,
+                )),
+                subtitle: Text('$start-$end · ${course.room}\n${course.teacher}'),
+                isThreeLine: true,
+              ),
+            ),
+          ],
         ),
-        title: Text(course.name, style: TextStyle(
-          fontWeight: FontWeight.bold,
-          decoration: isPast ? TextDecoration.lineThrough : null,
-          color: isPast ? Colors.grey : null,
-        )),
-        subtitle: Text('$start-$end · ${course.room}\n${course.teacher}'),
-        isThreeLine: true,
       ),
     );
   }
