@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'models/course.dart';
 import 'services/local_timetable_service.dart';
@@ -75,9 +76,29 @@ class _TimetablePageState extends State<TimetablePage> {
         _loadedEmpty = false;
       });
       _updateCountdown();
+      _updateHomeWidget();
     } else {
       setState(() => _loadedEmpty = true);
     }
+  }
+
+  Future<void> _updateHomeWidget() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonStr = prefs.getString('timetable_json');
+      if (jsonStr != null) {
+        await HomeWidget.saveWidgetData<String>('timetable_json', jsonStr);
+        final week1Str = prefs.getString('week1_monday');
+        if (week1Str != null) {
+          await HomeWidget.saveWidgetData<String>('week1_monday', week1Str);
+        }
+        await HomeWidget.updateWidget(
+          name: 'TimetableWidgetProvider',
+          androidName: 'TimetableWidgetProvider',
+          qualifiedAndroidName: 'com.jikuai.gdust_lite.TimetableWidgetProvider',
+        );
+      }
+    } catch (_) {}
   }
 
   Future<void> _importFromFile() async {
@@ -99,6 +120,7 @@ class _TimetablePageState extends State<TimetablePage> {
         _statusMsg = '导入完成：${data.length} 周，${data.values.fold(0, (s, l) => s + l.length)} 条课程';
       });
       _updateCountdown();
+    _updateHomeWidget();
 
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) setState(() => _statusMsg = null);

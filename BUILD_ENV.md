@@ -1,5 +1,23 @@
 # Build Environment Record
 
+## v4 Release (2026-06-13 18:22)
+
+新增 Android 桌面小组件（home_widget 插件）
+
+| 组件 | 版本 |
+|------|------|
+| Flutter | 3.24.5 (Dart 3.5.4) |
+| JDK | OpenJDK 21.0.10 (Homebrew) |
+| AGP (Android Gradle Plugin) | 8.3.0 |
+| Gradle | 8.9 |
+| Kotlin | 1.9.10 |
+| compileSdkVersion | 35 |
+| NDK | 25.1.8937393 |
+| macOS | Darwin 25.4.0 (arm64) |
+| APK 大小 | 21.4MB |
+| 包名 | com.jikuai.gdust_lite |
+| 新增依赖 | home_widget ^0.7.0 |
+
 ## v3 Release (2026-06-13)
 
 | 组件 | 版本 |

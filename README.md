@@ -10,12 +10,13 @@
 - 📁 **文件导入** — 从手机本地选择 JSON 文件导入
 - 📋 **剪贴板导入** — 从剪贴板粘贴 JSON 内容
 - 💾 **本地缓存** — 首次导入后自动缓存，后续打开无需重复导入
+- 📱 **桌面小组件** — Android 主屏幕显示今日课程
 
 ## 📦 下载
 
 | 版本 | 大小 | 下载 |
 |------|------|------|
-| v3 (Flutter 3.24.5) | 21.0MB | [gdust_lite.apk](../../releases/latest) |
+| v4 (Flutter 3.24.5 + 桌面小组件) | 21.4MB | [gdust_lite.apk](../../releases/latest) |
 
 > 包名 `com.jikuai.gdust_lite`，与 Full 版可共存。
 
