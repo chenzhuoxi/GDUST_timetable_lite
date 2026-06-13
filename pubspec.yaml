@@ -1,7 +1,7 @@
 name: gdust_lite
 description: GDUST 课表查看工具 Lite 版 - 纯展示，导入 JSON 即用
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=2.19.6 <4.0.0'
