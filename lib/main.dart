@@ -203,6 +203,19 @@ class _TimetablePageState extends State<TimetablePage> {
       appBar: AppBar(
         title: _buildWeekDropdown(currentWeek),
         actions: [
+          if (selectedWeek != currentWeek || selectedWeekday != DateTime.now().weekday)
+            IconButton(
+              icon: const Icon(Icons.today),
+              tooltip: '回到今天',
+              onPressed: () {
+                setState(() {
+                  selectedWeek = currentWeek;
+                  selectedWeekday = DateTime.now().weekday;
+                  _gridMode = false;
+                });
+                _weekdayPageController.jumpToPage(selectedWeekday - 1);
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.file_upload_outlined),
             tooltip: '导入 JSON',
@@ -232,6 +245,7 @@ class _TimetablePageState extends State<TimetablePage> {
       dropdownColor: Theme.of(context).colorScheme.surface,
       items: List.generate(maxWeek, (i) {
         final w = i + 1;
+        final isSelected = w == selectedWeek;
         final isCurrent = w == currentWeek;
         return DropdownMenuItem(
           value: w,
@@ -239,7 +253,7 @@ class _TimetablePageState extends State<TimetablePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('第 $w 周', style: TextStyle(
-                fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               )),
               if (isCurrent) ...[
                 const SizedBox(width: 6),
@@ -257,7 +271,10 @@ class _TimetablePageState extends State<TimetablePage> {
         );
       }),
       onChanged: (v) {
-        if (v != null) setState(() => selectedWeek = v);
+        if (v != null) setState(() {
+          selectedWeek = v;
+          _gridMode = true;
+        });
       },
     );
   }

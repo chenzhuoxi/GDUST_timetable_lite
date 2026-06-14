@@ -3,7 +3,15 @@
     android:initialLayout="@layout/widget_timetable"
     android:minWidth="180dp"
     android:minHeight="110dp"
+    android:minResizeWidth="180dp"
+    android:minResizeHeight="110dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="2"
+    android:maxResizeWidth="320dp"
+    android:maxResizeHeight="250dp"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen"
-    android:description="@string/widget_description" />
+    android:widgetFeatures="reconfigurable"
+    android:description="@string/widget_description"
+    android:previewLayout="@layout/widget_timetable" />
