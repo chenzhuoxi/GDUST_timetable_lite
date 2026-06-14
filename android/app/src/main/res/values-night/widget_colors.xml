@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- HyperOS Widget Colors - Dark Mode -->
+    <color name="widget_bg">#1E1E1E</color>
+    <color name="widget_title_color">#E0E0E0</color>
+    <color name="widget_week_color">#999999</color>
+    <color name="widget_courses_color">#CCCCCC</color>
+</resources>
