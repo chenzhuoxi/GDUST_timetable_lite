@@ -48,6 +48,7 @@ class _TimetablePageState extends State<TimetablePage> {
   bool _gridMode = false;
   bool _mergeCourses = false;
   late PageController _weekdayPageController;
+  bool _pageControllerReady = false;
 
   @override
   void initState() {
@@ -64,12 +65,21 @@ class _TimetablePageState extends State<TimetablePage> {
     super.dispose();
   }
 
+  /// 计算绝对页码: (week, weekday) → page index
+  int _pageFor(int week, int weekday) => (week - 1) * 7 + (weekday - 1);
+
+  /// 从绝对页码反算 (week, weekday)
+  List<int> _weekDayForPage(int page) {
+    final week = page ~/ 7 + 1;
+    final weekday = page % 7 + 1;
+    return [week, weekday];
+  }
+
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() => _mergeCourses = prefs.getBool('merge_courses') ?? false);
     final savedDate = await LocalTimetableService.loadWeek1Monday();
     if (savedDate != null) week1Monday = savedDate;
-    // Refresh current week after loading week1Monday
     setState(() => selectedWeek = currentTeachingWeek());
   }
 
@@ -81,11 +91,21 @@ class _TimetablePageState extends State<TimetablePage> {
         loaded = true;
         _loadedEmpty = false;
       });
+      _reinitPageController();
       _updateCountdown();
       _updateHomeWidget();
     } else {
       setState(() => _loadedEmpty = true);
     }
+  }
+
+  /// 数据加载后重新初始化 PageController（页数 = _maxWeek() * 7）
+  void _reinitPageController() {
+    _weekdayPageController.dispose();
+    _weekdayPageController = PageController(
+      initialPage: _pageFor(selectedWeek, selectedWeekday),
+    );
+    _pageControllerReady = true;
   }
 
   Future<void> _updateHomeWidget() async {
@@ -126,6 +146,7 @@ class _TimetablePageState extends State<TimetablePage> {
         _statusMsg = '导入完成：${data.length} 周，${data.values.fold(0, (s, l) => s + l.length)} 条课程';
         selectedWeek = currentTeachingWeek();
       });
+      _reinitPageController();
       _updateCountdown();
       _updateHomeWidget();
 
@@ -208,12 +229,15 @@ class _TimetablePageState extends State<TimetablePage> {
               icon: const Icon(Icons.today),
               tooltip: '回到今天',
               onPressed: () {
+                final today = DateTime.now().weekday;
                 setState(() {
                   selectedWeek = currentWeek;
-                  selectedWeekday = DateTime.now().weekday;
+                  selectedWeekday = today;
                   _gridMode = false;
                 });
-                _weekdayPageController.jumpToPage(selectedWeekday - 1);
+                if (_pageControllerReady) {
+                  _weekdayPageController.jumpToPage(_pageFor(currentWeek, today));
+                }
               },
             ),
           IconButton(
@@ -352,9 +376,18 @@ class _TimetablePageState extends State<TimetablePage> {
         Expanded(
           child: PageView.builder(
             controller: _weekdayPageController,
-            itemCount: 7,
-            onPageChanged: (i) => setState(() => selectedWeekday = i + 1),
-            itemBuilder: (ctx, i) => _buildCourseList(week),
+            itemCount: _maxWeek() * 7,
+            onPageChanged: (i) {
+              final wd = _weekDayForPage(i);
+              setState(() {
+                selectedWeek = wd[0];
+                selectedWeekday = wd[1];
+              });
+            },
+            itemBuilder: (ctx, i) {
+              final wd = _weekDayForPage(i);
+              return _buildCourseListForDay(wd[0], wd[1]);
+            },
           ),
         ),
       ],
@@ -598,11 +631,13 @@ class _TimetablePageState extends State<TimetablePage> {
 
   void _onWeekdayTabTap(int wd) {
     setState(() => selectedWeekday = wd);
-    _weekdayPageController.animateToPage(
-      wd - 1,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
+    if (_pageControllerReady) {
+      _weekdayPageController.animateToPage(
+        _pageFor(selectedWeek, wd),
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   Widget _buildWeekdayTabs() {
@@ -627,8 +662,8 @@ class _TimetablePageState extends State<TimetablePage> {
     );
   }
 
-  Widget _buildCourseList(int week) {
-    final raw = _getCoursesForWeekday(week, selectedWeekday);
+  Widget _buildCourseListForDay(int week, int weekday) {
+    final raw = _getCoursesForWeekday(week, weekday);
     if (raw.isEmpty) {
       return Center(
         child: Column(
