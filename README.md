@@ -52,7 +52,8 @@ flutter build apk --release
 
 ## 相关项目
 
-- [GDUST_timetable](https://github.com/chenzhuoxi/GDUST_timetable) — 命令行版 + Web GUI，支持 CAS 登录和自动抓取
+- [GDUST_timetable](https://github.com/chenzhuoxi/GDUST_timetable) — 课表抓取工具（命令行 + Web GUI），支持 CAS 登录、自动验证码识别
+- [GDUST_timetable_full](https://github.com/chenzhuoxi/GDUST_timetable_full) — 广科课表 Full 版，内置 CAS 登录 + 自动抓取 + 课前提醒
 
 ## License
 
