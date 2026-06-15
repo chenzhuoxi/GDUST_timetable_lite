@@ -123,6 +123,11 @@ class _TimetablePageState extends State<TimetablePage> {
           androidName: 'TimetableWidgetProvider',
           qualifiedAndroidName: 'com.jikuai.gdust_lite.TimetableWidgetProvider',
         );
+        await HomeWidget.updateWidget(
+          name: 'CompactWidgetProvider',
+          androidName: 'CompactWidgetProvider',
+          qualifiedAndroidName: 'com.jikuai.gdust_lite.CompactWidgetProvider',
+        );
       }
     } catch (_) {}
   }
@@ -647,11 +652,13 @@ class _TimetablePageState extends State<TimetablePage> {
       child: Row(
         children: List.generate(7, (i) {
           final wd = i + 1;
+          final date = dateFromWeekDay(selectedWeek, wd);
+          final dateStr = '${date.month}/${date.day}';
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2),
               child: ChoiceChip(
-                label: Center(child: Text(labels[i])),
+                label: Center(child: Text('${labels[i]} $dateStr', style: const TextStyle(fontSize: 11))),
                 selected: wd == selectedWeekday,
                 onSelected: (_) => _onWeekdayTabTap(wd),
               ),

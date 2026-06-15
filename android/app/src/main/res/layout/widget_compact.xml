@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:padding="0dp">
+
+    <!-- 标题栏 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/widget_compact_weekday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="第1周 · 周一"
+            android:textSize="13sp"
+            android:textColor="@color/widget_week_color" />
+
+        <TextView
+            android:id="@+id/widget_compact_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上课中"
+            android:textSize="10sp"
+            android:textColor="@color/widget_week_color"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- ListView: 平铺剩余课程 -->
+    <ListView
+        android:id="@+id/widget_compact_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="2dp" />
+
+    <!-- 空状态 -->
+    <LinearLayout
+        android:id="@+id/widget_compact_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="今日课程已结束 🎉"
+            android:textSize="14sp"
+            android:textColor="@color/widget_courses_color"
+            android:gravity="center" />
+    </LinearLayout>
+
+</LinearLayout>

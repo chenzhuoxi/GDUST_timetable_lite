@@ -5,10 +5,9 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 
 /**
- * 4×2 小组件：今日课表（ListView 可滑动）
- * 原 TimetableWidgetProvider 重构为委托给 WidgetDataProvider
+ * 2×2 小组件：剩余课程列表（ListView 平铺）
  */
-class TimetableWidgetProvider : AppWidgetProvider() {
+class CompactWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(
         context: Context,
@@ -18,9 +17,9 @@ class TimetableWidgetProvider : AppWidgetProvider() {
         for (appWidgetId in appWidgetIds) {
             WidgetDataProvider.updateWidget(
                 context, appWidgetManager, appWidgetId,
-                R.layout.widget_timetable, "medium"
+                R.layout.widget_compact, "compact"
             )
-            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_medium_list)
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.widget_compact_list)
         }
     }
 
@@ -30,8 +29,8 @@ class TimetableWidgetProvider : AppWidgetProvider() {
             if (appWidgetIds != null) {
                 val wm = AppWidgetManager.getInstance(context)
                 for (id in appWidgetIds) {
-                    WidgetDataProvider.updateWidget(context, wm, id, R.layout.widget_timetable, "medium")
-                    wm.notifyAppWidgetViewDataChanged(id, R.id.widget_medium_list)
+                    WidgetDataProvider.updateWidget(context, wm, id, R.layout.widget_compact, "compact")
+                    wm.notifyAppWidgetViewDataChanged(id, R.id.widget_compact_list)
                 }
             }
         } else {
@@ -43,11 +42,11 @@ class TimetableWidgetProvider : AppWidgetProvider() {
         fun updateAll(context: Context) {
             val wm = AppWidgetManager.getInstance(context)
             val ids = wm.getAppWidgetIds(
-                android.content.ComponentName(context, TimetableWidgetProvider::class.java)
+                android.content.ComponentName(context, CompactWidgetProvider::class.java)
             )
             for (id in ids) {
-                WidgetDataProvider.updateWidget(context, wm, id, R.layout.widget_timetable, "medium")
-                wm.notifyAppWidgetViewDataChanged(id, R.id.widget_medium_list)
+                WidgetDataProvider.updateWidget(context, wm, id, R.layout.widget_compact, "compact")
+                wm.notifyAppWidgetViewDataChanged(id, R.id.widget_compact_list)
             }
         }
     }

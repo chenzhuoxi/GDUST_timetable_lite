@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_bg"
-    android:padding="21dp">
+    android:padding="16dp">
 
     <!-- 标题栏 -->
     <LinearLayout
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="今日课表"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textColor="@color/widget_title_color"
             android:textStyle="bold" />
 
@@ -30,19 +30,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="第1周"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:textColor="@color/widget_week_color" />
     </LinearLayout>
 
-    <!-- 课程列表 -->
-    <TextView
-        android:id="@+id/widget_courses"
+    <!-- 课程列表（可滑动） -->
+    <ListView
+        android:id="@+id/widget_medium_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="没有课程 🎉"
-        android:textSize="12sp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:stackFromBottom="false" />
+
+    <!-- 空状态 -->
+    <TextView
+        android:id="@+id/widget_medium_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="今天没有课程 🎉"
+        android:textSize="14sp"
         android:textColor="@color/widget_courses_color"
-        android:lineSpacingExtra="4dp" />
+        android:visibility="gone" />
 
 </LinearLayout>

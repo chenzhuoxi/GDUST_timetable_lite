@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/widget_course_card_bg"
+    android:padding="10dp"
+    android:layout_marginBottom="6dp">
+
+    <TextView
+        android:id="@+id/list_item_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⏰ 08:30-09:15"
+        android:textSize="12sp"
+        android:textColor="@color/widget_week_color" />
+
+    <TextView
+        android:id="@+id/list_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="高等数学"
+        android:textSize="15sp"
+        android:textColor="@color/widget_title_color"
+        android:textStyle="bold"
+        android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+    <TextView
+        android:id="@+id/list_item_room"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📍 A301"
+        android:textSize="13sp"
+        android:textColor="@color/widget_courses_color"
+        android:layout_marginTop="2dp"
+        android:maxLines="1"
+        android:ellipsize="end" />
+
+</LinearLayout>
