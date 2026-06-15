@@ -654,13 +654,41 @@ class _TimetablePageState extends State<TimetablePage> {
           final wd = i + 1;
           final date = dateFromWeekDay(selectedWeek, wd);
           final dateStr = '${date.month}/${date.day}';
+          final isSelected = wd == selectedWeekday;
           return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: ChoiceChip(
-                label: Center(child: Text('${labels[i]} $dateStr', style: const TextStyle(fontSize: 11))),
-                selected: wd == selectedWeekday,
-                onSelected: (_) => _onWeekdayTabTap(wd),
+            child: GestureDetector(
+              onTap: () => _onWeekdayTabTap(wd),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 2),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primaryContainer
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: isSelected
+                      ? null
+                      : Border.all(color: Colors.grey.shade300, width: 0.5),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(labels[i], style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onPrimaryContainer
+                          : Colors.black87,
+                    )),
+                    const SizedBox(height: 2),
+                    Text(dateStr, style: TextStyle(
+                      fontSize: 10,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.7)
+                          : Colors.grey.shade500,
+                    )),
+                  ],
+                ),
               ),
             ),
           );
