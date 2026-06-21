@@ -110,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('广科课表 Lite'),
-            subtitle: Text('版本 1.0.6\n导入 gdust-timetable 导出的 JSON 即可使用'),
+            subtitle: Text('版本 1.0.8\n导入 gdust-timetable 导出的 JSON 即可使用'),
           ),
         ],
       ),
